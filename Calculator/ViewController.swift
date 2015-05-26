@@ -50,7 +50,7 @@ class ViewController: UIViewController
         if userIsInTheMiddleOfTypingANumber {
             enter()
         }
-        historyStack.insert(constant, atIndex:0)
+        brain.insertHistory(constant)
         switch constant {
         case "π": display.text = "\(M_PI)"
         default: break
@@ -61,8 +61,6 @@ class ViewController: UIViewController
     @IBAction func resetCalculator() {
         userIsInTheMiddleOfTypingANumber = false
         brain.clear()
-        //operandStack.removeAll()
-        historyStack.removeAll()
         display.text = "0"
         history.text = "0"
         println("reset")
@@ -84,49 +82,52 @@ class ViewController: UIViewController
 
             enter()
         }
-        //historyStack.append(operation)
-        historyStack.insert(operation, atIndex:0)
+        brain.insertHistory(operation)
         if (Array(display.text!)[0] != "=") {
             display.text = "=" + display.text!
         }
         if let operation = sender.currentTitle {
-            if let result = brain.performOperation(operation) {
-                displayValue = result
-            } else {
-                displayValue = 0
-            }
+//            if let result = brain.performOperation(operation) {
+//                displayValue = result
+//            } else {
+//                displayValue = 0
+//            }
+        displayValue = brain.performOperation(operation)
         }
     }
-    
-    var historyStack = Array<String>()
-    
+       
     @IBAction func enter() {
         if userIsInTheMiddleOfTypingANumber {
-            historyStack.insert(display.text!, atIndex:0)
+            brain.insertHistory(display.text!)
         }
         userIsInTheMiddleOfTypingANumber = false
-        if let result = brain.pushOperand(displayValue!) {
-            displayValue = result
-        } else {
-            displayValue = nil
-        }
-        
-        history.text = "\(historyStack)"
+//        if let result = brain.pushOperand(displayValue!) {
+//            displayValue = result
+//        } else {
+//            displayValue = nil
+//        }
+        displayValue = brain.pushOperand(displayValue!)
+
+        history.text = brain.getHistory()
         
     }
     
     var displayValue: Double? {
         get {
-//            if let value = NSNumberFormatter().numberFromString(display.text!)?.doubleValue {
-//                return value
-//            } else {
-//                return nil
-//            }
-            return NSNumberFormatter().numberFromString(display.text!)?.doubleValue
+            if let value = NSNumberFormatter().numberFromString(display.text!)?.doubleValue {
+                return value
+            } else {
+                return nil
+            }
+            //return NSNumberFormatter().numberFromString(display.text!)?.doubleValue
         }
         set {
-            display.text = "\(newValue!)"
-            userIsInTheMiddleOfTypingANumber = false
+            if newValue == nil {
+                display.text = "0"
+            } else {
+                display.text = "\(newValue!)"
+                userIsInTheMiddleOfTypingANumber = false
+            }
         }
     }
     

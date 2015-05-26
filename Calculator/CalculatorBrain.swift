@@ -33,6 +33,8 @@ class CalculatorBrain
     
     private var opStack = [Op]()
     
+    private var historyStack = [String]()
+    
     private var knownOps = [String:Op]()
     
     init() {
@@ -90,5 +92,18 @@ class CalculatorBrain
     
     func clear() {
         opStack.removeAll()
+        historyStack.removeAll()
+    }
+    
+    func clearHistory() {
+        historyStack.removeAll()
+    }
+    
+    func getHistory() -> String {
+        return "\(historyStack)"
+    }
+    
+    func insertHistory(history:String) {
+        historyStack.insert(history, atIndex: 0)
     }
 }
