@@ -13,6 +13,7 @@ class CalculatorBrain
     private enum Op: Printable
     {
         case Operand(Double)
+        case Variable(String)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double, Double) -> Double)
         
@@ -21,6 +22,8 @@ class CalculatorBrain
                 switch self {
                 case .Operand(let operand):
                     return "\(operand)"
+                case .Variable(let symbol):
+                    return "\(symbol)"
                 case .UnaryOperation(let symbol, _):
                     return symbol
                 case .BinaryOperation(let symbol, _):
@@ -37,12 +40,23 @@ class CalculatorBrain
     
     private var knownOps = [String:Op]()
     
+    private var variableValues = [String: Double]()
+    
+    var description: String {
+        get {
+            return "CalculatorBrain"
+            
+        }
+    }
+    
     init() {
         knownOps["×"] = Op.BinaryOperation("×", *)
         knownOps["÷"] = Op.BinaryOperation("÷") {$1 / $0}
         knownOps["+"] = Op.BinaryOperation("+", +)
         knownOps["−"] = Op.BinaryOperation("−") {$1 - $0}
         knownOps["√"] = Op.UnaryOperation("√", sqrt)
+        
+        //variableValues[
     }
     
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op])
@@ -53,6 +67,8 @@ class CalculatorBrain
             switch op {
             case .Operand(let operand):
                 return (operand, remainingOps)
+            case .Variable(let symbol):
+                return (variableValues[symbol], remainingOps)
             case .UnaryOperation(_, let operation):
                 let operandEvaluation = evaluate(remainingOps)
                 if let operand = operandEvaluation.result {
@@ -80,6 +96,11 @@ class CalculatorBrain
     
     func pushOperand(operand: Double) -> Double? {
         opStack.append(Op.Operand(operand))
+        return evaluate()
+    }
+    
+    func pushOperand(symbol: String) -> Double? {
+        opStack.append(Op.Variable(symbol))
         return evaluate()
     }
     
