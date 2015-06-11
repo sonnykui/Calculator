@@ -14,6 +14,7 @@ class CalculatorBrain
     {
         case Operand(Double)
         case Variable(String)
+        case Constant(String)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double, Double) -> Double)
         
@@ -23,6 +24,8 @@ class CalculatorBrain
                 case .Operand(let operand):
                     return "\(operand)"
                 case .Variable(let symbol):
+                    return "\(symbol)"
+                case .Constant(let symbol):
                     return "\(symbol)"
                 case .UnaryOperation(let symbol, _):
                     return symbol
